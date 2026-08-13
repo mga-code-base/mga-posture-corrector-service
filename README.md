@@ -3,7 +3,7 @@
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-6DB33F?logo=springboot)](https://spring.io/)
 [![Java Version](https://img.shields.io/badge/Java-17-007396?logo=openjdk)](https://openjdk.org/)
 [![Build Tool](https://img.shields.io/badge/Build-Apache%20Maven%203.9.x-C71A36?logo=apachemaven)](https://maven.apache.org/)
-[![AI Engine](https://img.shields.io/badge/AI%20Engine-Pose%20Estimation-FF6F00?logo=tensorflow)](https://tensorflow.org)
+[![AI Engine](https://img.shields.io/badge/AI%20Engine-Posture%20Analysis-FF6F00?logo=tensorflow)](https://tensorflow.org)
 [![Hosting](https://img.shields.io/badge/Platform-Railway%20Cloud-purple?logo=railway)](https://railway.app/)
 
 ## 📌 Service Overview
