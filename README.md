@@ -8,9 +8,11 @@
 
 ## 📌 Service Overview
 
-`mga-posture-corrector-service` is a compute-intensive AI computer vision microservice responsible for analyzing member workout pose frames (squats, deadlifts, bench presses, etc.) and returning real-time posture correction feedback.
+`mga-posture-corrector-service` is a compute-intensive AI computer vision microservice responsible for analyzing member workout pose frames and returning real-time posture correction feedback.
+Currently Supports - Sqauts
+Future Releases - Deadlifts, Pull Ups, Bench Press.
 
-Due to heavy GPU/CPU processing requirements, this microservice is offloaded to run externally on Railway Cloud, while the remaining 10 microservices run on the local Kubernetes cluster.
+Due to heavy GPU/CPU processing requirements, this microservice is offloaded to run externally on Railway Cloud, while the remaining 10 microservices run on Vivian's localhost Kubernetes cluster.
 
 ### 🏛️ Architectural Features
 * Computer Vision Inference Engine: Processes incoming workout camera frames to perform keypoint estimation and skeleton pose evaluation.
