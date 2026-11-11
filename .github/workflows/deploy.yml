@@ -15,16 +15,15 @@ jobs:
       - name: Checkout Code Repository
         uses: actions/checkout@v4
 
-      # 🎯 SYNCHRONIZED TO JAVA 17
       - name: Set up Java Development Kit (JDK)
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '25'
           distribution: 'temurin'
           cache: 'maven'
 
       - name: Compile and Package Application JAR
-        run: mvn clean package -DskipTests -P k8s-prod
+        run: mvn -B clean verify -P k8s-prod
 
       - name: Log into GitHub Container Registry
         uses: docker/login-action@v3

@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mga-posture-corrector-service
+  labels:
+    app: mga-posture-corrector-service
+    app.kubernetes.io/name: mga-posture-corrector-service
+    app.kubernetes.io/part-of: mga
+    app.kubernetes.io/component: ai
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: mga-posture-corrector-service
+  template:
+    metadata:
+      labels:
+        app: mga-posture-corrector-service
+        app.kubernetes.io/name: mga-posture-corrector-service
+        app.kubernetes.io/part-of: mga
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: /actuator/prometheus
+        prometheus.io/port: "8087"
+    spec:
+      terminationGracePeriodSeconds: 45
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+      containers:
+        - name: mga-posture-corrector-service
+          image: ghcr.io/mga-code-base/mga-posture-corrector-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8087
+          envFrom:
+            - configMapRef:
+                name: mga-platform-config
+            - configMapRef:
+                name: mga-posture-corrector-service-config
+                optional: true
+            - secretRef:
+                name: mga-platform-secrets
+            - secretRef:
+                name: mga-posture-corrector-service-secrets
+                optional: true
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1536Mi
+            limits:
+              memory: 3Gi
+          startupProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: http
+            periodSeconds: 5
+            failureThreshold: 36
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: http
+            periodSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: http
+            periodSeconds: 5
+            failureThreshold: 3
+          lifecycle:
+            preStop:
+              exec:
+                command: ["sh", "-c", "sleep 10"]
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]

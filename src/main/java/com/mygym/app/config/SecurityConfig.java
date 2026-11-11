@@ -1,8 +1,5 @@
 package com.mygym.app.config;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier; // 🎯 IMPORT THE QUALIFIER
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -11,42 +8,25 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.mygym.app.security.JwtAuthenticationFilter;
-import jakarta.servlet.Filter;
+import com.mygym.app.security.JwtRoleConverter;
+import com.mygym.app.security.PlatformEndpoints;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SecurityConfig.class);
-    private final Filter jwtAuthFilter;
-
-    public SecurityConfig(@Qualifier("jwtAuthenticationFilter") Filter jwtAuthFilter) {
-        this.jwtAuthFilter = jwtAuthFilter;
-    }
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        LOGGER.info("=== [INITIALIZING PRODUCTION SECURITY FILTER CHAIN MATRIX] ===");
-        
-        http
-            .csrf(AbstractHttpConfigurer::disable)
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .requestMatchers("/error").permitAll()
-                
-                // Route mapping paths
-                .requestMatchers("/api/analyze/request-url").permitAll()
-                .requestMatchers("/api/analyze/squat").permitAll()
-                .requestMatchers("/api/analyze", "/api/analyze/**").authenticated()
-                
-                .anyRequest().authenticated()
-            )
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-
-        return http.build();
+        return http
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers(PlatformEndpoints.PUBLIC).permitAll()
+                        .requestMatchers("/api/analyze", "/api/analyze/**").hasAnyRole("MEMBER", "TRAINER", "ADMIN")
+                        .anyRequest().authenticated())
+                .oauth2ResourceServer(oauth -> oauth.jwt(jwt -> jwt.jwtAuthenticationConverter(JwtRoleConverter.create())))
+                .build();
     }
 }

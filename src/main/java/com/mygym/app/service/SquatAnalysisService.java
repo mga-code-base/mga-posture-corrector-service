@@ -11,6 +11,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.resilience.annotation.ConcurrencyLimit;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -44,6 +45,7 @@ public class SquatAnalysisService {
 	 * 🎯 STEP 2 REFACTOR ORCHESTRATION PIPELINE: Downloads, processes kinematics,
 	 * deletes local container file, and clears Backblaze asynchronously.
 	 */
+	@ConcurrencyLimit(2)
 	public SquatAnalysisResult processAndCleanupSquatVideo(String fileKey) throws Exception {
 		File temporaryVideoFile = null;
 		try {
@@ -94,6 +96,7 @@ public class SquatAnalysisService {
 		});
 	}
 
+	@ConcurrencyLimit(2)
 	public SquatAnalysisResult analyzeSquatVideo(MultipartFile file) throws Exception {
 		Path cachedVideoPath = Files.createTempFile("squat_session_", ".mp4");
 		file.transferTo(cachedVideoPath.toFile());

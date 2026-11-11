@@ -41,3 +41,12 @@ java -jar target/mga-posture-corrector-service.jar
 mvn spring-boot:run
 
 ```
+
+## Central logging from Railway
+
+Railway pods are outside the cluster's Fluent Bit, so with the `railway` Spring profile active the service also ships its ECS JSON logs straight to the `mga-logs` Kafka topic through an asynchronous, non-blocking Logback appender. Set on Railway:
+
+* `SPRING_PROFILES_ACTIVE=railway`
+* `KAFKA_BOOTSTRAP_SERVERS`, `KAFKA_SECURITY_PROTOCOL`, and the truststore/keystore locations (plain file paths, no `file:` prefix) and passwords (`KAFKA_TRUSTSTORE_LOCATION`, `KAFKA_TRUSTSTORE_PASSWORD`, `KAFKA_KEYSTORE_LOCATION`, `KAFKA_KEYSTORE_PASSWORD`)
+
+The logs then appear in mga-log-service next to the in-cluster services, searchable by trace id.

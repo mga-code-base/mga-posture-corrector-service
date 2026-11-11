@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<include resource="org/springframework/boot/logging/logback/defaults.xml" />
+
+	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder class="org.springframework.boot.logging.logback.StructuredLogEncoder">
+			<format>ecs</format>
+			<charset>UTF-8</charset>
+		</encoder>
+	</appender>
+
+	<springProfile name="railway">
+		<springProperty name="kafkaTopic" source="mga.logs.kafka.topic" defaultValue="mga-logs" />
+		<springProperty name="kafkaBootstrap" source="spring.kafka.bootstrap-servers" defaultValue="${KAFKA_BOOTSTRAP_SERVERS:-}" />
+
+		<appender name="KAFKA" class="com.mygym.app.logging.KafkaLogAppender">
+			<encoder class="org.springframework.boot.logging.logback.StructuredLogEncoder">
+				<format>ecs</format>
+				<charset>UTF-8</charset>
+			</encoder>
+			<topic>${kafkaTopic}</topic>
+			<bootstrapServers>${kafkaBootstrap}</bootstrapServers>
+			<securityProtocol>${KAFKA_SECURITY_PROTOCOL:-SSL}</securityProtocol>
+			<truststoreLocation>${KAFKA_TRUSTSTORE_LOCATION:-}</truststoreLocation>
+			<truststorePassword>${KAFKA_TRUSTSTORE_PASSWORD:-}</truststorePassword>
+			<keystoreLocation>${KAFKA_KEYSTORE_LOCATION:-}</keystoreLocation>
+			<keystorePassword>${KAFKA_KEYSTORE_PASSWORD:-}</keystorePassword>
+		</appender>
+
+		<appender name="ASYNC_KAFKA" class="ch.qos.logback.classic.AsyncAppender">
+			<queueSize>8192</queueSize>
+			<discardingThreshold>20</discardingThreshold>
+			<neverBlock>true</neverBlock>
+			<appender-ref ref="KAFKA" />
+		</appender>
+
+		<root level="INFO">
+			<appender-ref ref="ASYNC_KAFKA" />
+		</root>
+	</springProfile>
+
+	<root level="INFO">
+		<appender-ref ref="CONSOLE" />
+	</root>
+</configuration>
