@@ -24,7 +24,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(PlatformEndpoints.PUBLIC).permitAll()
-                        .requestMatchers("/api/analyze", "/api/analyze/**").hasAnyRole("MEMBER", "TRAINER", "ADMIN")
+                        .requestMatchers("/api/v1/analyze", "/api/v1/analyze/**").hasAnyRole("MEMBER", "TRAINER", "ADMIN")
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth -> oauth.jwt(jwt -> jwt.jwtAuthenticationConverter(JwtRoleConverter.create())))
                 .build();

@@ -21,7 +21,7 @@ import com.mygym.app.service.SquatAnalysisService;
  * REST Controller providing presigned video upload routes and triggering AI squat kinematics analysis.
  */
 @RestController
-@RequestMapping("/api/analyze")
+@RequestMapping("/api/v1/analyze")
 @CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.OPTIONS})
 public class SquatController {
 
